@@ -70,6 +70,13 @@ ota:
   password: !secret ota_password
 
 # ============================================================================
+# Preferences - Save data to flash memory
+# ============================================================================
+# This ensures sensor values are saved and restored after reboot
+preferences:
+  flash_write_interval: 5min
+
+# ============================================================================
 # WiFi Configuration
 # ============================================================================
 wifi:
@@ -193,6 +200,10 @@ sensor:
       unit_of_measurement: "m³"
       accuracy_decimals: 2
       icon: "mdi:counter"
+      # State class tells Home Assistant this is a cumulative value
+      state_class: total_increasing
+      # Device class for gas consumption
+      device_class: gas
       # Convert pulses to cubic meters
       filters:
         - multiply: !lambda "return 1.0 / ${pulses_per_cubic_meter};"
