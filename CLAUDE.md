@@ -146,10 +146,7 @@ After flashing:
 - secrets.yaml.example: Template for credentials
 
 ### Hardware Documentation (in resources/)
-- m5stack-atoms3-lite-datasheet.pdf: Device specifications
 - m5stack-atoms3-lite-pinout.jpg: GPIO pinout diagram
-- m5stack-atoms3-lite-schematic.pdf: Circuit schematic
-- esp32-s3-datasheet.pdf: Microcontroller datasheet
 
 ### ESPHome Resources
 - ESPHome Documentation: https://esphome.io/

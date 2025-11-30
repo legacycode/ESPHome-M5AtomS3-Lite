@@ -9,9 +9,8 @@ made-for-esphome: false
 project-url: https://github.com/legacycode/ESPHome-M5AtomS3-Lite.git
 ---
 
-# M5Stack ATOM S3 Lite - ESPHome Configuration
-
-A comprehensive ESPHome configuration for the M5Stack ATOM S3 Lite, a compact ESP32-S3 development board with built-in RGB LEDs, button, and IR transmitter.
+A minimal ESPHome hardware configuration for the M5Stack ATOM S3 Lite, a compact ESP32-S3 development board
+with built-in RGB LEDs, button, and IR transmitter.
 
 ## 📑 Table of Contents
 
@@ -24,19 +23,19 @@ A comprehensive ESPHome configuration for the M5Stack ATOM S3 Lite, a compact ES
 - [GPIO Pinout](#-gpio-pinout)
 - [Troubleshooting](#-troubleshooting)
 - [Documentation](#-documentation)
-- [Contributing](#-contributing)
-- [License](#-license)
 - [Acknowledgments](#-acknowledgments)
 
 ## 📋 Overview
 
-This project provides a ready-to-use ESPHome configuration for the M5Stack ATOM S3 Lite, making it easy to integrate this versatile device into your smart home setup. The configuration exposes all hardware features and can be easily customized for various use cases.
+This project provides a minimal ESPHome hardware configuration for the M5Stack ATOM S3 Lite. The configuration
+focuses on hardware definitions (RGB LEDs, button, IR transmitter) and basic WiFi connectivity, making it an ideal
+starting point for custom projects.
 
-<img src="resources/m5stack-atoms3-lite-overview.webp" alt="M5Stack ATOM S3 Lite" width="400px">
+![M5Stack ATOM S3 Lite](resources/m5stack-atoms3-lite-overview.webp)
 
 ## 🔧 Hardware Specifications
 
-**M5Stack ATOM S3 Lite**
+### M5Stack ATOM S3 Lite
 
 - **Microcontroller**: ESP32-S3-FN8 (8MB Flash, 512KB SRAM)
 - **Connectivity**: Wi-Fi 802.11 b/g/n, USB Type-C (USB-CDC)
@@ -52,18 +51,12 @@ This project provides a ready-to-use ESPHome configuration for the M5Stack ATOM 
 
 ### Integrated Components
 
-- ✅ **RGB LED Control** - 4 addressable WS2812 LEDs located beneath the button, fully RGB controllable with effects (pulse, strobe, random)
+- ✅ **RGB LED Control** - 4 addressable WS2812 LEDs located beneath the button, fully RGB controllable with effects
+  (pulse, strobe, random)
 - ✅ **Button Input** - Built-in button with debouncing and IR trigger example
 - ✅ **IR Transmitter** - Control IR devices (TVs, ACs, etc.)
 - ✅ **Status Reporting** - Device online/offline status
-
-### Home Assistant Integration
-
-- ✅ Native API with encryption
-- ✅ OTA (Over-The-Air) updates
-- ✅ Web server for standalone control
-- ✅ Captive portal for easy WiFi setup
-- ✅ Fallback hotspot mode
+- ✅ **WiFi Connectivity** - Basic WiFi connection for network integration
 
 ### Available Entities
 
@@ -73,80 +66,16 @@ This project provides a ready-to-use ESPHome configuration for the M5Stack ATOM 
 
 ## 🚀 Quick Start
 
-You can copy the configuration code directly from the [`m5stack-atoms3-lite.yaml`](m5stack-atoms3-lite.yaml) file and configure your secrets in ESPHome (top right corner: Secrets icon).
+You can copy the configuration code directly from the
+[`m5stack-atoms3-lite-minimal.yaml`](m5stack-atoms3-lite-minimal.yaml) file and configure your secrets in ESPHome.
 
-### Prerequisites
-
-1. **ESPHome** (v2025.11.2 or newer)
-
-   ```bash
-   pip install --upgrade esphome
-   ```
-
-2. **Hardware**
-   - M5Stack ATOM S3 Lite
-   - USB-C cable
-   - (Optional) Home Assistant for integration
-
-### Installation
-
-1. **Clone this repository**
-
-   ```bash
-   git clone https://github.com/legacycode/ESPHome-M5AtomS3-Lite.git
-   cd ESPHome-M5AtomS3-Lite
-   ```
-
-2. **Configure secrets**
-
-   ```bash
-   cp secrets.yaml.example secrets.yaml
-   # Edit secrets.yaml with your WiFi credentials and keys
-   ```
-
-3. **Customize the configuration** (optional)
-
-   Edit `m5stack-atoms3-lite.yaml` and change the substitutions:
-
-   ```yaml
-   substitutions:
-     devicename: "your-device-name"
-     friendly_name: "Your Device Name"
-   ```
-
-4. **Flash the device**
-
-   First time (via USB):
-
-   ```bash
-   esphome run m5stack-atoms3-lite.yaml
-   ```
-
-   Updates (via OTA):
-
-   ```bash
-   esphome run m5stack-atoms3-lite.yaml
-   ```
-
-5. **Add to Home Assistant**
-
-   The device should be auto-discovered. Go to:
-   - Settings → Devices & Services → ESPHome
-   - Click "Configure" on the discovered device
-   - Enter your encryption key from `secrets.yaml`
-
-   Once configured, you'll see the following controls in Home Assistant:
-
-   <img src="resources/m5stack-atoms3-lite-homeassistant-control.jpg" alt="M5Stack ATOM S3 Lite Home Assistant Controls" width="400px">
-
-   **Available Controls:**
-   - **LED** - Control LED color, brightness, and effects
-   - **Button** - View button press state
-   - **Status** - Connection status (Connected/Disconnected)
+**Note**: This is a minimal hardware configuration. To add Home Assistant integration (API, OTA updates, web server),
+you can extend the configuration with additional components. See the [ESPHome documentation](https://esphome.io/)
+for details.
 
 ## 📝 Configuration
 
-Here is the complete `m5stack-atoms3-lite.yaml` configuration file:
+Here is the complete `m5stack-atoms3-lite-minimal.yaml` configuration file:
 
 ```yaml
 # ============================================================================
@@ -212,27 +141,6 @@ logger:
   level: DEBUG
 
 # ============================================================================
-# Home Assistant API - Communication with Home Assistant
-# ============================================================================
-# This enables your device to talk to Home Assistant
-api:
-  # Encryption protects the communication between device and Home Assistant
-  encryption:
-    # The encryption key is stored in secrets.yaml for security
-    key: !secret encryption_key
-
-# ============================================================================
-# OTA Updates - Update Firmware Over WiFi
-# ============================================================================
-# OTA (Over-The-Air) lets you update the device wirelessly without USB cable
-ota:
-  # Use ESPHome's built-in OTA system
-  platform: esphome
-
-  # Password protects OTA updates (stored in secrets.yaml)
-  password: !secret ota_password
-
-# ============================================================================
 # WiFi Configuration
 # ============================================================================
 # Configure WiFi connection to your home network
@@ -242,43 +150,6 @@ wifi:
 
   # Your WiFi password - stored in secrets.yaml
   password: !secret wifi_password
-
-  # Fallback Access Point - If WiFi fails, device creates its own hotspot
-  ap:
-    # The name of the fallback hotspot that will appear (max 32 characters)
-    ssid: "${friendly_name} Fallback"
-
-    # Password for the fallback hotspot - stored in secrets.yaml
-    password: !secret ap_password
-
-    # How long to wait before activating fallback mode (15 seconds)
-    ap_timeout: 15s
-
-# ============================================================================
-# Web Server - Control Device from Web Browser
-# ============================================================================
-# This creates a web interface at http://[device-ip-address]/
-web_server:
-  # The web server runs on port 80 (default HTTP port)
-  port: 80
-
-# ============================================================================
-# Time - Synchronize Clock with Home Assistant
-# ============================================================================
-# Gets the current time from Home Assistant (needed for time-based automations)
-time:
-  # Use Home Assistant as the time source
-  - platform: homeassistant
-
-    # Internal ID to reference this time component
-    id: homeassistant_time
-
-# ============================================================================
-# Captive Portal - Easy WiFi Setup
-# ============================================================================
-# When in fallback mode, this shows a configuration page automatically
-# (like when you connect to hotel WiFi and get a popup)
-captive_portal:
 
 # ============================================================================
 # RGB LED Strip - The 4 Colorful LEDs
@@ -421,22 +292,12 @@ Common Samsung TV codes:
 
 ### Example 2: Status Indicator
 
-Use the RGB LEDs to show system status, notifications, or alerts.
-
-```yaml
-# Add to Home Assistant automations
-service: light.turn_on
-target:
-  entity_id: light.m5stack_atoms3_lite_led
-data:
-  brightness: 255
-  rgb_color: [255, 0, 0]  # Red for alerts
-  effect: "Pulse"
-```
+Use the RGB LEDs to show system status, notifications, or alerts. You can control the LEDs directly from the
+configuration using automations, or extend the configuration with Home Assistant API integration for remote control.
 
 ## 🔌 GPIO Pinout
 
-<img src="resources/m5stack-atoms3-lite-pinout.jpg" alt="M5Stack ATOM S3 Lite Pinout" width="400px">
+![M5Stack ATOM S3 Lite Pinout](resources/m5stack-atoms3-lite-pinout.jpg)
 
 ### Used Pins in Default Configuration
 
@@ -456,15 +317,6 @@ data:
 
 ## 🐛 Troubleshooting
 
-### LEDs Not Working
-
-**After flashing, LEDs don't respond:**
-
-1. Check logs: `esphome logs m5stack-atoms3-lite.yaml`
-2. Look for RMT errors or GPIO conflicts
-3. Hard reset the device (unplug and reconnect)
-4. Reflash: `esphome run m5stack-atoms3-lite.yaml`
-
 ### IR Transmitter Range Issues
 
 **IR commands not reaching target:**
@@ -479,11 +331,7 @@ data:
 ### Hardware Resources
 
 - [M5Stack ATOM S3 Lite Docs](https://docs.m5stack.com/en/core/AtomS3%20Lite)
-- [M5Stack ATOM S3 Lite Datasheet](resources/m5stack-atoms3-lite-datasheet.pdf)
-- [ESP32-S3 Datasheet](resources/esp32-s3-datasheet.pdf)
-- [Schematic](resources/m5stack-atoms3-lite-schematic.pdf)
 - [Pinout Diagram](resources/m5stack-atoms3-lite-pinout.jpg)
-- [SY8089 Power IC Datasheet](resources/sy8089-power-ic-datasheet.pdf)
 
 ### ESPHome Resources
 
@@ -491,14 +339,6 @@ data:
 - [ESP32 Platform](https://esphome.io/components/esp32.html)
 - [FastLED Light Component](https://esphome.io/components/light/fastled.html)
 - [Remote Transmitter](https://esphome.io/components/remote_transmitter.html)
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 

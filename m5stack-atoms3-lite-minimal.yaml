@@ -61,27 +61,6 @@ logger:
   level: DEBUG
 
 # ============================================================================
-# Home Assistant API - Communication with Home Assistant
-# ============================================================================
-# This enables your device to talk to Home Assistant
-api:
-  # Encryption protects the communication between device and Home Assistant
-  encryption:
-    # The encryption key is stored in secrets.yaml for security
-    key: !secret encryption_key
-
-# ============================================================================
-# OTA Updates - Update Firmware Over WiFi
-# ============================================================================
-# OTA (Over-The-Air) lets you update the device wirelessly without USB cable
-ota:
-  # Use ESPHome's built-in OTA system
-  platform: esphome
-
-  # Password protects OTA updates (stored in secrets.yaml)
-  password: !secret ota_password
-
-# ============================================================================
 # WiFi Configuration
 # ============================================================================
 # Configure WiFi connection to your home network
@@ -91,43 +70,6 @@ wifi:
 
   # Your WiFi password - stored in secrets.yaml
   password: !secret wifi_password
-
-  # Fallback Access Point - If WiFi fails, device creates its own hotspot
-  ap:
-    # The name of the fallback hotspot that will appear (max 32 characters)
-    ssid: "${friendly_name} Fallback"
-
-    # Password for the fallback hotspot - stored in secrets.yaml
-    password: !secret ap_password
-
-    # How long to wait before activating fallback mode (15 seconds)
-    ap_timeout: 15s
-
-# ============================================================================
-# Web Server - Control Device from Web Browser
-# ============================================================================
-# This creates a web interface at http://[device-ip-address]/
-web_server:
-  # The web server runs on port 80 (default HTTP port)
-  port: 80
-
-# ============================================================================
-# Time - Synchronize Clock with Home Assistant
-# ============================================================================
-# Gets the current time from Home Assistant (needed for time-based automations)
-time:
-  # Use Home Assistant as the time source
-  - platform: homeassistant
-
-    # Internal ID to reference this time component
-    id: homeassistant_time
-
-# ============================================================================
-# Captive Portal - Easy WiFi Setup
-# ============================================================================
-# When in fallback mode, this shows a configuration page automatically
-# (like when you connect to hotel WiFi and get a popup)
-captive_portal:
 
 # ============================================================================
 # RGB LED Strip - The 4 Colorful LEDs

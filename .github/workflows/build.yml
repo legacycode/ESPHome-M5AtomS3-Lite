@@ -35,15 +35,14 @@ jobs:
     - name: Create secrets.yaml from template
       run: |
         cp secrets.yaml.example secrets.yaml
-        sed -i 's/YOUR_32_BYTE_BASE64_KEY=/507p6qLb8\/L+lDfZb2HdvKzaDyAj28C\/Q0NMyffw3LQ=/g' secrets.yaml
 
     - name: Validate ESPHome configuration
       run: |
-        esphome config m5stack-atoms3-lite.yaml
+        esphome config m5stack-atoms3-lite-minimal.yaml
 
     - name: Compile firmware
       run: |
-        esphome compile m5stack-atoms3-lite.yaml
+        esphome compile m5stack-atoms3-lite-minimal.yaml
 
     - name: Upload firmware artifact
       if: success()
