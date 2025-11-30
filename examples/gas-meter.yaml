@@ -134,36 +134,6 @@ binary_sensor:
     filters:
       - delayed_off: 10ms
 
-  # Reed Contact - Gas Meter Pulse Sensor
-  - platform: gpio
-    name: "${friendly_name} Reed Contact"
-    pin:
-      # Reed contact connected to GPIO39 and GND
-      number: GPIO39
-      mode:
-        input: true
-        # Enable internal pullup resistor
-        # When reed contact closes, it pulls the pin to GND (LOW)
-        pullup: true
-      # Inverted: closed contact = LOW, open contact = HIGH
-      inverted: true
-    # Filters to debounce the reed contact
-    filters:
-      # Ignore rapid changes (contact bounce) for 50ms
-      - delayed_on: 50ms
-      - delayed_off: 50ms
-    # Visual feedback: Flash LED when pulse is detected
-    on_press:
-      then:
-        - light.turn_on:
-            id: led
-            brightness: 100%
-            red: 0%
-            green: 100%
-            blue: 0%
-        - delay: 100ms
-        - light.turn_off: led
-
 # ============================================================================
 # Sensors - Numeric Sensors
 # ============================================================================
@@ -184,20 +154,49 @@ sensor:
     icon: "mdi:fire"
     # Timeout: if no pulse for 2 minutes, assume flow = 0
     timeout: 2min
+    # Internal filter mode: PULSE counts complete pulse cycles (close + open = 1 pulse)
+    # EDGE would count close AND open as 2 separate pulses (incorrect)
+    internal_filter_mode: PULSE
+    # Internal filter: Ignore pulses closer than 100ms (debouncing)
+    internal_filter: 100ms
     # Filters
     filters:
       # Each pulse represents 1/pulses_per_cubic_meter cubic meters
       # Multiply by 60 to convert from m³/min to m³/h
       - multiply: !lambda "return 60.0 / ${pulses_per_cubic_meter};"
+    # Visual feedback: LED leuchtet für 3 Sekunden
+    on_raw_value:
+      then:
+        - light.turn_on:
+            id: led
+            brightness: 100%
+            red: 0%
+            green: 100%
+            blue: 0%
+        # LED bleibt für 3 Sekunden an (gibt Zeit für langsame LED-Reaktion)
+        - delay: 3s
+        - light.turn_off: led
     # Total counter - tracks total gas consumption
     total:
       name: "${friendly_name} Total"
+      id: pulse_meter_total
       unit_of_measurement: "m³"
       accuracy_decimals: 2
       icon: "mdi:counter"
       # Convert pulses to cubic meters
       filters:
         - multiply: !lambda "return 1.0 / ${pulses_per_cubic_meter};"
+
+  # Total Pulses - Raw pulse count (without conversion to m³)
+  - platform: copy
+    source_id: pulse_meter_total
+    name: "${friendly_name} Total Pulses"
+    unit_of_measurement: "pulses"
+    accuracy_decimals: 0
+    icon: "mdi:counter"
+    filters:
+      # Multiply back to get raw pulses
+      - multiply: ${pulses_per_cubic_meter}
 
   # WiFi Signal Strength
   - platform: wifi_signal
