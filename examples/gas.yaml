@@ -1,0 +1,210 @@
+# ============================================================================
+# M5Stack ATOM S3 Lite - Gas Meter with Reed Contact
+# ============================================================================
+# Configuration for reading a gas meter using a reed contact sensor
+# Reed contact connected to GPIO39 and GND
+
+# Substitutions: Variables that can be reused throughout this configuration
+substitutions:
+  # The internal name used by ESPHome (use lowercase, no spaces, hyphens OK)
+  devicename: "gas-meter"
+
+  # The friendly name shown in Home Assistant (can have spaces and capitals)
+  friendly_name: "Gas Meter"
+
+  # Description of what this device does
+  device_comment: "Gas Meter Reader with Reed Contact"
+
+  # How many pulses equal 1 cubic meter of gas (adjust for your meter)
+  # Common values: 1, 10, 100, 1000
+  # Check your gas meter's specification
+  pulses_per_cubic_meter: "100"
+
+# ============================================================================
+# Core ESPHome Configuration
+# ============================================================================
+esphome:
+  name: ${devicename}
+  friendly_name: ${friendly_name}
+  comment: ${device_comment}
+  name_add_mac_suffix: false
+
+# ============================================================================
+# ESP32 Hardware Configuration
+# ============================================================================
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+# ============================================================================
+# Logger - Serial Output for Debugging
+# ============================================================================
+logger:
+  # baud_rate: 0 is REQUIRED for ESP32-S3 (it uses USB-CDC, not traditional UART)
+  baud_rate: 0
+  level: DEBUG
+
+# ============================================================================
+# Home Assistant API - Communication with Home Assistant
+# ============================================================================
+api:
+  encryption:
+    key: !secret encryption_key
+
+# ============================================================================
+# OTA Updates - Update Firmware Over WiFi
+# ============================================================================
+ota:
+  platform: esphome
+  password: !secret ota_password
+
+# ============================================================================
+# WiFi Configuration
+# ============================================================================
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Fallback Access Point
+  ap:
+    ssid: "${friendly_name} Fallback"
+    password: !secret ap_password
+    ap_timeout: 15s
+
+# ============================================================================
+# Web Server - Control Device from Web Browser
+# ============================================================================
+web_server:
+  port: 80
+
+# ============================================================================
+# Time - Synchronize Clock with Home Assistant
+# ============================================================================
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
+# ============================================================================
+# Captive Portal - Easy WiFi Setup
+# ============================================================================
+captive_portal:
+
+# ============================================================================
+# RGB LED Strip - Status Indicator
+# ============================================================================
+light:
+  - platform: fastled_clockless
+    chipset: WS2812B
+    pin: GPIO35
+    num_leds: 4
+    rgb_order: GRB
+    id: led
+    name: "${friendly_name} LED"
+    restore_mode: RESTORE_DEFAULT_OFF
+    effects:
+      - pulse:
+          name: "Pulse"
+          transition_length: 1s
+          update_interval: 1s
+      - strobe:
+          name: "Strobe"
+      - random:
+          name: "Random"
+          transition_length: 5s
+          update_interval: 3s
+
+# ============================================================================
+# Binary Sensors - On/Off Sensors
+# ============================================================================
+binary_sensor:
+  # Status Sensor - Shows if device is online or offline
+  - platform: status
+    name: "${friendly_name} Status"
+
+  # Built-in Button
+  - platform: gpio
+    name: "${friendly_name} Button"
+    pin:
+      number: GPIO41
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    filters:
+      - delayed_off: 10ms
+
+  # Reed Contact - Gas Meter Pulse Sensor
+  - platform: gpio
+    name: "${friendly_name} Reed Contact"
+    pin:
+      # Reed contact connected to GPIO39 and GND
+      number: GPIO39
+      mode:
+        input: true
+        # Enable internal pullup resistor
+        # When reed contact closes, it pulls the pin to GND (LOW)
+        pullup: true
+      # Inverted: closed contact = LOW, open contact = HIGH
+      inverted: true
+    # Filters to debounce the reed contact
+    filters:
+      # Ignore rapid changes (contact bounce) for 50ms
+      - delayed_on: 50ms
+      - delayed_off: 50ms
+    # Visual feedback: Flash LED when pulse is detected
+    on_press:
+      then:
+        - light.turn_on:
+            id: led
+            brightness: 100%
+            red: 0%
+            green: 100%
+            blue: 0%
+        - delay: 100ms
+        - light.turn_off: led
+
+# ============================================================================
+# Sensors - Numeric Sensors
+# ============================================================================
+sensor:
+  # Pulse Meter - Counts pulses and calculates flow rate
+  - platform: pulse_meter
+    name: "${friendly_name} Flow Rate"
+    # Connect to the reed contact pin
+    pin:
+      number: GPIO39
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    # Unit of measurement
+    unit_of_measurement: "m³/h"
+    accuracy_decimals: 2
+    icon: "mdi:fire"
+    # Timeout: if no pulse for 2 minutes, assume flow = 0
+    timeout: 2min
+    # Filters
+    filters:
+      # Each pulse represents 1/pulses_per_cubic_meter cubic meters
+      # Multiply by 60 to convert from m³/min to m³/h
+      - multiply: !lambda "return 60.0 / ${pulses_per_cubic_meter};"
+    # Total counter - tracks total gas consumption
+    total:
+      name: "${friendly_name} Total"
+      unit_of_measurement: "m³"
+      accuracy_decimals: 2
+      icon: "mdi:counter"
+      # Convert pulses to cubic meters
+      filters:
+        - multiply: !lambda "return 1.0 / ${pulses_per_cubic_meter};"
+
+  # WiFi Signal Strength
+  - platform: wifi_signal
+    name: "${friendly_name} WiFi Signal"
+    update_interval: 60s
+
+  # Uptime Sensor
+  - platform: uptime
+    name: "${friendly_name} Uptime"
+    update_interval: 60s
