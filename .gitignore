@@ -1,0 +1,21 @@
+# ESPHome secrets - never commit!
+secrets.yaml
+
+# ESPHome build files
+.esphome/
+*.bin
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node.js
+node_modules/
+package-lock.json

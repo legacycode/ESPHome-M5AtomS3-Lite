@@ -1,0 +1,54 @@
+name: ESPHome Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Cache pip packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install ESPHome
+      run: |
+        pip install --upgrade pip
+        pip install esphome
+
+    - name: Create secrets.yaml from template
+      run: |
+        cp secrets.yaml.example secrets.yaml
+        sed -i 's/YOUR_32_BYTE_BASE64_KEY=/507p6qLb8\/L+lDfZb2HdvKzaDyAj28C\/Q0NMyffw3LQ=/g' secrets.yaml
+
+    - name: Validate ESPHome configuration
+      run: |
+        esphome config m5stack-atoms3-lite.yaml
+
+    - name: Compile firmware
+      run: |
+        esphome compile m5stack-atoms3-lite.yaml
+
+    - name: Upload firmware artifact
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: firmware
+        path: .esphome/build/m5stack-atoms3-lite/.pioenvs/m5stack-atoms3-lite/firmware.bin
+        retention-days: 7
