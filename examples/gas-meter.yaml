@@ -53,6 +53,16 @@ api:
     key: !secret encryption_key
 
 # ============================================================================
+# MQTT - Send data to MQTT broker
+# ============================================================================
+mqtt:
+  broker: mqtt.home
+  # Disable Home Assistant Discovery via MQTT to avoid conflicts with API
+  discovery: false
+  # Optional: Set a topic prefix for all MQTT messages
+  topic_prefix: esphome/gas-meter
+
+# ============================================================================
 # OTA Updates - Update Firmware Over WiFi
 # ============================================================================
 ota:
