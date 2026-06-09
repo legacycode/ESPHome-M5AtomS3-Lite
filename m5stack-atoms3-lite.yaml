@@ -2,7 +2,7 @@
 # M5Stack ATOM S3 Lite - ESPHome Configuration
 # ============================================================================
 # This is a complete configuration for the M5Stack ATOM S3 Lite board.
-# The ATOM S3 Lite is a tiny ESP32-S3 board with RGB LEDs, a button, and IR.
+# The ATOM S3 Lite is a tiny ESP32-S3 board with a RGB LED, a button, and IR.
 
 # Substitutions: Variables that can be reused throughout this configuration
 # Think of these as "find and replace" - everywhere you see ${devicename},
@@ -130,9 +130,9 @@ time:
 captive_portal:
 
 # ============================================================================
-# RGB LED Strip - The 4 Colorful LEDs
+# Colorful RGB LED
 # ============================================================================
-# The ATOM S3 Lite has 4 RGB LEDs built-in on GPIO35
+# The ATOM S3 Lite has a RGB LED built-in on GPIO35
 # Documentation: https://esphome.io/components/light/fastled
 light:
   # Use FastLED library for addressable LED control
@@ -141,27 +141,27 @@ light:
     # WS2812B is the type of LED chip used
     chipset: WS2812B
 
-    # The LEDs are connected to GPIO35 on the board
+    # The LED is connected to GPIO35 on the board
     pin: GPIO35
 
-    # There are 4 LEDs in the strip
-    num_leds: 4
+    # There is a single LED on the board
+    num_leds: 1
 
-    # GRB is the color order for these specific LEDs (Green-Red-Blue)
+    # GRB is the color order for this specific LED (Green-Red-Blue)
     rgb_order: GRB
 
-    # Internal ID to reference these LEDs in automations
+    # Internal ID to reference this LED in automations
     id: led
 
     # The name that appears in Home Assistant
     name: "${friendly_name} LED"
 
-    # When device restarts, LEDs start OFF
+    # When device restarts, LED starts OFF
     restore_mode: RESTORE_DEFAULT_OFF
 
     # Built-in light effects you can activate from Home Assistant
     effects:
-      # Pulse effect: LEDs fade in and out smoothly
+      # Pulse effect: LED fades in and out smoothly
       - pulse:
           name: "Pulse"
           # How long each fade in/out takes (1 second)
@@ -169,11 +169,11 @@ light:
           # How often to update the effect (1 second)
           update_interval: 1s
 
-      # Strobe effect: LEDs flash on and off rapidly
+      # Strobe effect: LED flashes on and off rapidly
       - strobe:
           name: "Strobe"
 
-      # Random effect: LEDs change to random colors
+      # Random effect: LED changes to random colors
       - random:
           name: "Random"
           # How long to transition between colors (5 seconds)

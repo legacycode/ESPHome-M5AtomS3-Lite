@@ -11,7 +11,7 @@ project-url: https://github.com/legacycode/ESPHome-M5AtomS3-Lite.git
 
 # M5Stack ATOM S3 Lite - ESPHome Configuration
 
-A comprehensive ESPHome configuration for the M5Stack ATOM S3 Lite, a compact ESP32-S3 development board with built-in RGB LEDs, button, and IR transmitter.
+A comprehensive ESPHome configuration for the M5Stack ATOM S3 Lite, a compact ESP32-S3 development board with built-in RGB LED, button, and IR transmitter.
 
 ## 📑 Table of Contents
 
@@ -41,7 +41,7 @@ This project provides a ready-to-use ESPHome configuration for the M5Stack ATOM 
 - **Microcontroller**: ESP32-S3-FN8 (8MB Flash, 512KB SRAM)
 - **Connectivity**: Wi-Fi 802.11 b/g/n, USB Type-C (USB-CDC)
 - **Built-in Features**:
-  - 4x WS2812 RGB LEDs (GPIO35) - Located beneath the button, fully RGB controllable
+  - WS2812 RGB LED (GPIO35) - Located beneath the button, fully RGB controllable
   - Programmable Button (GPIO41)
   - IR Transmitter LED (GPIO4)
   - Grove Port for external sensors (GPIO1, GPIO2)
@@ -52,7 +52,7 @@ This project provides a ready-to-use ESPHome configuration for the M5Stack ATOM 
 
 ### Integrated Components
 
-- ✅ **RGB LED Control** - 4 addressable WS2812 LEDs located beneath the button, fully RGB controllable with effects (pulse, strobe, random)
+- ✅ **RGB LED Control** - One addressable WS2812 LED located beneath the button, fully RGB controllable with effects (pulse, strobe, random)
 - ✅ **Button Input** - Built-in button with debouncing and IR trigger example
 - ✅ **IR Transmitter** - Control IR devices (TVs, ACs, etc.)
 - ✅ **Status Reporting** - Device online/offline status
@@ -67,7 +67,7 @@ This project provides a ready-to-use ESPHome configuration for the M5Stack ATOM 
 
 ### Available Entities
 
-- `LED` - RGB LED strip control (4x WS2812 addressable LEDs)
+- `LED` - RGB LED control (WS2812 addressable LED)
 - `Button` - Button press sensor with IR transmitter example
 - `Status` - Device availability sensor (online/offline)
 
@@ -153,7 +153,7 @@ Here is the complete `m5stack-atoms3-lite.yaml` configuration file:
 # M5Stack ATOM S3 Lite - ESPHome Configuration
 # ============================================================================
 # This is a complete configuration for the M5Stack ATOM S3 Lite board.
-# The ATOM S3 Lite is a tiny ESP32-S3 board with RGB LEDs, a button, and IR.
+# The ATOM S3 Lite is a tiny ESP32-S3 board with a RGB LED, a button, and IR.
 
 # Substitutions: Variables that can be reused throughout this configuration
 # Think of these as "find and replace" - everywhere you see ${devicename},
@@ -281,9 +281,9 @@ time:
 captive_portal:
 
 # ============================================================================
-# RGB LED Strip - The 4 Colorful LEDs
+# Colorful RGB LED
 # ============================================================================
-# The ATOM S3 Lite has 4 RGB LEDs built-in on GPIO35
+# The ATOM S3 Lite has a RGB LED built-in on GPIO35
 # Documentation: https://esphome.io/components/light/fastled
 light:
   # Use FastLED library for addressable LED control
@@ -292,27 +292,27 @@ light:
     # WS2812B is the type of LED chip used
     chipset: WS2812B
 
-    # The LEDs are connected to GPIO35 on the board
+    # The LED is connected to GPIO35 on the board
     pin: GPIO35
 
-    # There are 4 LEDs in the strip
-    num_leds: 4
+    # There is a single LED on the board
+    num_leds: 1
 
-    # GRB is the color order for these specific LEDs (Green-Red-Blue)
+    # GRB is the color order for this specific LED (Green-Red-Blue)
     rgb_order: GRB
 
-    # Internal ID to reference these LEDs in automations
+    # Internal ID to reference this LED in automations
     id: led
 
     # The name that appears in Home Assistant
     name: "${friendly_name} LED"
 
-    # When device restarts, LEDs start OFF
+    # When device restarts, LED starts OFF
     restore_mode: RESTORE_DEFAULT_OFF
 
     # Built-in light effects you can activate from Home Assistant
     effects:
-      # Pulse effect: LEDs fade in and out smoothly
+      # Pulse effect: LED fades in and out smoothly
       - pulse:
           name: "Pulse"
           # How long each fade in/out takes (1 second)
@@ -320,11 +320,11 @@ light:
           # How often to update the effect (1 second)
           update_interval: 1s
 
-      # Strobe effect: LEDs flash on and off rapidly
+      # Strobe effect: LED flashes on and off rapidly
       - strobe:
           name: "Strobe"
 
-      # Random effect: LEDs change to random colors
+      # Random effect: LED changes to random colors
       - random:
           name: "Random"
           # How long to transition between colors (5 seconds)
@@ -421,7 +421,7 @@ Common Samsung TV codes:
 
 ### Example 2: Status Indicator
 
-Use the RGB LEDs to show system status, notifications, or alerts.
+Use the RGB LED to show system status, notifications, or alerts.
 
 ```yaml
 # Add to Home Assistant automations
@@ -442,7 +442,7 @@ data:
 
 | GPIO | Function | Description |
 |------|----------|-------------|
-| GPIO35 | RGB LED | 4x WS2812 addressable LEDs |
+| GPIO35 | RGB LED | WS2812 addressable LED |
 | GPIO41 | Button | Built-in button (active low) |
 | GPIO4 | IR TX | Infrared transmitter LED |
 
@@ -456,9 +456,9 @@ data:
 
 ## 🐛 Troubleshooting
 
-### LEDs Not Working
+### LED Not Working
 
-**After flashing, LEDs don't respond:**
+**After flashing, LED doesn't respond:**
 
 1. Check logs: `esphome logs m5stack-atoms3-lite.yaml`
 2. Look for RMT errors or GPIO conflicts
